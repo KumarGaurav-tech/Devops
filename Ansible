@@ -1,3 +1,10 @@
+🔸 2. Install Ansible on Ubuntu
+
+sudo apt update
+sudo apt install ansible -y
+
+
+
 Inventory File (hosts)
 Ansible uses an inventory file to know which machines to manage.
 Create hosts file:
