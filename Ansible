@@ -1,0 +1,30 @@
+Inventory File (hosts)
+Ansible uses an inventory file to know which machines to manage.
+Create hosts file:
+[web]
+your local server ip or hostname
+
+Run Your First Command (Ping)
+ansible -i hosts all -m ping
+
+Write a Basic Playbook
+Create playbook.yml:
+---
+- name: Install and Start Nginx
+  hosts: web
+  become: true
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+🔸 7. Run the Playbook
+ansible-playbook -i hosts playbook.yml
