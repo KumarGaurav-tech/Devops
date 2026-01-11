@@ -1,0 +1,135 @@
+✅ What We’ll Build
+A full-stack demo app with:
+
+GitHub → Jenkins → Docker → Kubernetes (via Minikube)
+
+🧱 Step 1: Create Local Project Structure
+
+mkdir devops-capstone && cd devops-capstone
+
+mkdir backend frontend k8s
+
+touch backend/app.js backend/Dockerfile \
+      frontend/index.html \
+      Jenkinsfile \
+      k8s/deployment.yaml k8s/service.yaml \
+      sonar-project.properties
+
+📁 Folder Overview
+
+devops-capstone/
+├── backend/
+│   ├── app.js
+│   └── Dockerfile
+├── frontend/
+│   └── index.html
+├── Jenkinsfile
+├── sonar-project.properties
+├── k8s/
+│   ├── deployment.yaml
+│   └── service.yaml
+
+
+✏️ Step 2: Add Code to Files
+✅ backend/app.js
+
+const http = require('http');
+const server = http.createServer((req, res) => {
+  res.end('Hello from DevOps Capstone Backend!');
+});
+server.listen(5000);
+
+✅ backend/Dockerfile
+
+FROM node:18
+WORKDIR /app
+COPY app.js .
+CMD ["node", "app.js"]
+
+✅ frontend/index.html
+
+<!DOCTYPE html>
+<html>
+  <head><title>DevOps Capstone</title></head>
+  <body><h1>Hello from Frontend</h1></body>
+</html>
+
+✅ Jenkinsfile
+
+pipeline {
+  agent any
+
+  stages {
+    stage('Clone') {
+      steps {
+        git branch: 'main', url: 'https://github.com/KumarGaurav-tech/devops-capstone.git'
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t capstone-backend ./backend'
+      }
+    }
+
+    stage('Deploy to K8s') {
+      steps {
+        sh '''
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+        '''
+      }
+    }
+  }
+}
+
+✅ k8s/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capstone-backend
+  template:
+    metadata:
+      labels:
+        app: capstone-backend
+    spec:
+      containers:
+        - name: capstone-backend
+          image: capstone-backend
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+
+
+
+
+✅ k8s/service.yaml
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone-service
+spec:
+  selector:
+    app: capstone-backend
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: NodePort
+
+
+✅ sonar-project.properties
+
+sonar.projectKey=capstone
+sonar.sources=.
+sonar.host.url=http://localhost:9000
+sonar.login=your_sonarqube_token
+
+
